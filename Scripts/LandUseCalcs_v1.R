@@ -1,11 +1,60 @@
-# First pass at converting the amount of protein from game into land use
-
 # Packages -----
 library(tidyverse)
+library(dplyr)
+library(tidyr)
+
 options(tibble.width = Inf)
 rm(list=ls())
-# Load protein and LCA data -----
-protein <- read_csv("Data/ProteinByCountryByFood_v1.csv")
+
+#################################
+# Preparing raw data from GENuS #
+#################################
+
+pops <- read_csv("Data/Pops.csv")
+genus <- read_csv("Data/GenusNutrientsByFood.csv")
+
+# select medians only for analysis
+meds<- select(genus, ISO3, COUNTRY, contains("Median"))
+meatmeds<- select(meds, ISO3, COUNTRY, contains("Meat"), contains("meat"), contains ("snails"))
+
+# add population estimates
+d1 <- left_join(pops, meatmeds, by = "ISO3")
+
+# rename
+protein<- d1 %>% 
+  rename(bovinepppd = 'Bovine MeatMediang/person/day',
+         shoatpppd = 'Mutton & Goat MeatMediang/person/day',
+         pigpppd = 'PigmeatMediang/person/day',
+         poultrypppd = 'Poultry MeatMediang/person/day',
+         birdpppd = 'Bird meat; nesMediang/person/day',
+         horsepppd = `Horse meatMediang/person/day`,
+         assespppd = `Meat of assesMediang/person/day`,
+         mulespppd = `Meat of mulesMediang/person/day`,
+         camelpppd = `Camel meatMediang/person/day`,
+         rabbitpppd = `Rabbit meatMediang/person/day`,
+         rodentspppd = `Meat of other rodentsMediang/person/day`,
+         camelidspppd = `Meat of other camelidsMediang/person/day`,
+         gamepppd = `Game meatMediang/person/day`,
+         driednespppd = 'Meat; dried; nesMediang/person/day',
+         nespppd = 'Meat; nesMediang/person/day',
+         snailpppd = `Snails; not seaMediang/person/day`)
+
+# calculate game meat per country per year (in kgs)
+protein$gamepcpa <- protein$gamepppd*protein$Pop*365.25/1000
+
+# calculate total meat per country per year (in kgs)
+a <- select(protein, contains("pppd"))
+protein$allmeatpppd <- rowSums(a, na.rm = TRUE)
+protein$allmeatpcpa <- protein$allmeatpppd*protein$Pop*365.25/1000
+
+protein$percent_game_pppd <- protein$gamepppd/protein$allmeatpppd*100
+protein$percent_game_pcpa <- protein$gamepcpa/protein$allmeatpcpa*100
+
+###################
+# Land conversion #
+###################
+
+# Load LCA data -----
 lca <- read_csv("Data/LCAdataforbushmeat.csv")
 
 # Calculate proption of different meats in each country ----
@@ -22,15 +71,16 @@ for(i in 1:length(types)){
   protein[[name]] <- protein[[types[i]]] / protein$non_game_meat
                 
 }
+
 # Check
 unique(rowSums(protein[,grep("Prop", names(protein))], na.rm = TRUE))
 
 # Assign game in these proportions -----
 land_grab <- protein %>%
-  select(ISO3, COUNTRY, `Population (2020)`,
+  select(ISO3, COUNTRY, Pop,
          Game_median_kg_country_year,
          grep("Prop", names(.))) %>%
-  pivot_longer(-c(ISO3, COUNTRY, `Population (2020)`, Game_median_kg_country_year),
+  pivot_longer(-c(ISO3, COUNTRY, Pop, Game_median_kg_country_year),
                names_to = "MeatType",
                values_to = "Prop") %>%
   mutate(MeatType = gsub("Prop_", "", MeatType),
