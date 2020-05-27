@@ -19,6 +19,12 @@ f1 <- food %>%
 fp <- left_join(protein, f1, by = "ISO3")
 lfp <- left_join(fp, land, by = 'ISO3')
 
+# Patronising Dave is patronising (1):
+# If names match, you don't need "by", saving you whole seconds of typing
+# Patronising Dave is patronising (2):
+# You can avoid altering data by using "by" if names DON'T match
+left_join(protein, food, by = c("ISO3" = "ISO"))
+
 lfp$FS_rank <- as.numeric(lfp$FS_rank)
 View(lfp)
 # Hollie's first bubble plot -----
