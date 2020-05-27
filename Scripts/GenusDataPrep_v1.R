@@ -20,7 +20,9 @@ genus <- read_csv("Data/GenusNutrientsByFood.csv")
 
 # Select medians for analysis and combine with populations -----
 meds<- select(genus, ISO3, COUNTRY, contains("Median"))
-meatmeds<- select(meds, ISO3, COUNTRY, contains("Meat"), contains("meat"), contains ("snails"))
+b <- select(meds, contains("Median"))
+meds$allprotien_percap <- rowSums(b, na.rm = TRUE)
+meatmeds<- select(meds, ISO3, COUNTRY, contains("Meat"), contains("meat"), contains ("snails"), contains ("allprotien_percap"))
 
 # add population estimates
 d1 <- left_join(pops, meatmeds, by = "ISO3")
@@ -56,9 +58,8 @@ protein$gamepcpa <- protein$gamepppd*protein$Pop*365.25/1000
 a <- select(protein, contains("pppd"))
 protein$allmeatpppd <- rowSums(a, na.rm = TRUE)
 protein$allmeatpcpa <- protein$allmeatpppd*protein$Pop*365.25/1000
-
 protein$percent_game_pppd <- protein$gamepppd/protein$allmeatpppd*100
-protein$percent_game_pcpa <- protein$gamepcpa/protein$allmeatpcpa*100
+protein$protiennogame_ppd <- protein$allprotien_percap - protein$gamepppd
 
 # Save the cleaned data -----
 # (in a new directory to separate out raw from processed) 
