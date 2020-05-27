@@ -6,103 +6,102 @@ library(tidyr)
 options(tibble.width = Inf)
 rm(list=ls())
 
-#################################
-# Preparing raw data from GENuS #
-#################################
-
-pops <- read_csv("Data/Pops.csv")
-genus <- read_csv("Data/GenusNutrientsByFood.csv")
-
-# select medians only for analysis
-meds<- select(genus, ISO3, COUNTRY, contains("Median"))
-meatmeds<- select(meds, ISO3, COUNTRY, contains("Meat"), contains("meat"), contains ("snails"))
-
-# add population estimates
-d1 <- left_join(pops, meatmeds, by = "ISO3")
-
-# rename
-protein<- d1 %>% 
-  rename(bovinepppd = 'Bovine MeatMediang/person/day',
-         shoatpppd = 'Mutton & Goat MeatMediang/person/day',
-         pigpppd = 'PigmeatMediang/person/day',
-         poultrypppd = 'Poultry MeatMediang/person/day',
-         birdpppd = 'Bird meat; nesMediang/person/day',
-         horsepppd = `Horse meatMediang/person/day`,
-         assespppd = `Meat of assesMediang/person/day`,
-         mulespppd = `Meat of mulesMediang/person/day`,
-         camelpppd = `Camel meatMediang/person/day`,
-         rabbitpppd = `Rabbit meatMediang/person/day`,
-         rodentspppd = `Meat of other rodentsMediang/person/day`,
-         camelidspppd = `Meat of other camelidsMediang/person/day`,
-         gamepppd = `Game meatMediang/person/day`,
-         driednespppd = 'Meat; dried; nesMediang/person/day',
-         nespppd = 'Meat; nesMediang/person/day',
-         snailpppd = `Snails; not seaMediang/person/day`)
-
-# calculate game meat per country per year (in kgs)
-protein$gamepcpa <- protein$gamepppd*protein$Pop*365.25/1000
-
-# calculate total meat per country per year (in kgs)
-a <- select(protein, contains("pppd"))
-protein$allmeatpppd <- rowSums(a, na.rm = TRUE)
-protein$allmeatpcpa <- protein$allmeatpppd*protein$Pop*365.25/1000
-
-protein$percent_game_pppd <- protein$gamepppd/protein$allmeatpppd*100
-protein$percent_game_pcpa <- protein$gamepcpa/protein$allmeatpcpa*100
-
-###################
-# Land conversion #
-###################
-
-# Load LCA data -----
+# Load LCA and GENus data -----
 lca <- read_csv("Data/LCAdataforbushmeat.csv")
+protein <- read_csv("ProcessedData/GENusData_cleaned.csv")
 
-# Calculate proption of different meats in each country ----
+# 1) Calculate proption of different meats in each country ----
 types <- names(protein)
-types <- types[grep("Meat", types)]
-types <- types[-grep("All", types)]
+# grep searches for the string (e.g. "pppd" and returns the indices where it appears)
+grep("pppd", types)
+# grepl does the same but returns a logical for each position:
+grepl("pppd", types)
+# You then index by this (either grep or grepl should work here)
+types[grep("pppd", types)] 
+types <- types[grep("pppd", types)] 
+types <- types[-grep("all", types)]
+types <- types[-grep("game", types)]
 
-protein$non_game_meat <- rowSums(protein[,types], na.rm = TRUE)
+# 1)a) Reassign weird meats to ones we have LCA data for -----
+# Do this in two stages: 
+# a) Reassign those we're sure of (birds --> poultry etc.)
+# b) Reassign those we're not sure of proportionally
 
-for(i in 1:length(types)){
-  name <- paste("Prop",
-                gsub("_median_g_capita_day", "", types[i]),
-                sep = "_")
-  protein[[name]] <- protein[[types[i]]] / protein$non_game_meat
-                
-}
-
-# Check
-unique(rowSums(protein[,grep("Prop", names(protein))], na.rm = TRUE))
-
-# Assign game in these proportions -----
-land_grab <- protein %>%
-  select(ISO3, COUNTRY, Pop,
-         Game_median_kg_country_year,
-         grep("Prop", names(.))) %>%
-  pivot_longer(-c(ISO3, COUNTRY, Pop, Game_median_kg_country_year),
-               names_to = "MeatType",
-               values_to = "Prop") %>%
-  mutate(MeatType = gsub("Prop_", "", MeatType),
-         kg_extra = Prop * Game_median_kg_country_year) %>%
-  filter(!is.na(Game_median_kg_country_year))
-
-# Link these to the LCA data -----
-lookup <- data.frame(MeatType = unique(land_grab$MeatType)) %>%
+# a) Ones we're sure of:
+lookup <- data.frame(MeatType = types) %>%
   arrange(MeatType) %>%
-  mutate(Product = c("Poultry Meat",
+  mutate(Product = c("Bovine Meat (beef herd)", 
+                     "Poultry Meat",
                      "Bovine Meat (beef herd)", 
                      "Bovine Meat (beef herd)", 
                      "Bovine Meat (beef herd)", 
-                     NA, NA, 
-                     "Lamb & Mutton", 
+                     NA, 
+                     "Bovine Meat (beef herd)", 
+                     "Bovine Meat (beef herd)", 
+                     NA, 
                      "Pig Meat", 
                      "Poultry Meat",
-                     "Pig Meat", "Pig Meat", 
+                     "Pig Meat", 
+                     "Pig Meat", 
+                     "Lamb & Mutton", 
                      NA))
+# Refs: 
+# http://agritech.tnau.ac.in/animal_husbandry/animhus_rabbitbreed.html
+# https://books.google.co.uk/books?id=CtD-6CPdZCgC&printsec=frontcover&source=gbs_ge_summary_r&cad=0#v=onepage&q&f=false
+conventional_prot <- protein %>%
+  select(ISO3, types) %>%
+  pivot_longer(-ISO3,
+               names_to = "MeatType",
+               values_to = "PerPersonPerDay_g") %>%
+  left_join(., lookup) %>%
+  # Cut the ones we're NOT sure about
+  filter(!is.na(Product)) %>%
+  # Sum up across products
+  group_by(ISO3, Product) %>%
+  summarise(PerPersonPerDay_g = sum(PerPersonPerDay_g, na.rm = TRUE)) %>%
+  # Summarise "undoes" one grouping --in this case 'Product'-- so we can now take the total
+  mutate(Total = sum(PerPersonPerDay_g, na.rm = TRUE),
+         Proportion = PerPersonPerDay_g / Total,
+         check = sum(Proportion)) %>%
+  ungroup()
+  
+# b) Ones we're not sure of. I don't think we need to worry about the fact that dried is dried
+#    because everything is done in protein
+unconventional_prot <- protein %>%
+  select(ISO3, types) %>%
+  pivot_longer(-ISO3,
+               names_to = "MeatType",
+               values_to = "PerPersonPerDay_g") %>%
+  left_join(., lookup) %>%
+  # Cut ones we ARE sure about
+  filter(is.na(Product)) %>%
+  # Sum up across products
+  group_by(ISO3) %>%
+  summarise(Unconv_pppd = sum(PerPersonPerDay_g, na.rm = TRUE)) %>%
+  ungroup()
 
+# Join to conventional and reassign
+conventional_prot <- conventional_prot %>%
+  left_join(., unconventional_prot) %>%
+  mutate(PerPersonPerDay_g = PerPersonPerDay_g + Proportion * Unconv_pppd) %>%
+  # Recalculate the total ()
+  group_by(ISO3, Product) %>%
+  summarise(PerPersonPerDay_g = sum(PerPersonPerDay_g, na.rm = TRUE)) %>%
+  mutate(Total = sum(PerPersonPerDay_g, na.rm = TRUE),
+         Proportion = PerPersonPerDay_g / Total,
+         check = sum(Proportion)) %>%
+  ungroup()
+range(conventional_prot$check, na.rm = TRUE)
+
+# 2) Assign game in these proportions -----
+land_grab <- protein %>%
+  select(ISO3, COUNTRY, gamepcpa) %>%
+  left_join(conventional_prot, .) %>%
+  filter(!is.na(gamepcpa)) %>%
+  mutate(kg_extra = Proportion * gamepcpa)
+
+# Link these to the LCA data -----
 land_grab <- land_grab %>%
-  left_join(.,lookup) %>%
   left_join(., lca) %>%
   mutate(extra_pasture_m = kg_extra * `Perm Past`,
          extra_arable_fallow_m = kg_extra * (Fallow + Arable),
@@ -120,7 +119,8 @@ land_grab_country <- land_grab %>%
   ungroup() 
 
 write_csv(land_grab_country,
-          "Data/LandDemandByCountry.csv")
+          "ProcessedData/LandDemandByCountry.csv")
+
 # Make some figures ----
 plot_data <- land_grab_country %>%
   arrange(-country_extra_total_km) %>%
