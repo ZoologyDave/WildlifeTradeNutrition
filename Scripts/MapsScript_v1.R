@@ -41,15 +41,22 @@ bio.food <-
 # But can update these later
 bio.food <-
   bio.food %>%
-  mutate(biodiv_score = ifelse(biodiv > median(.$biodiv, na.rm=TRUE),2,1),
-         food_score = ifelse(FS_score < median(.$FS_score, na.rm = TRUE),2,1)) %>%
+  mutate(biodiv_score = ifelse(biodiv > quantile(.$biodiv, .67, na.rm=TRUE),3,
+                               ifelse(biodiv > 0, 2, 1)), # 33rd percentile is 0. Setting medium risk countries have food insecurity risk > 0
+         food_score = ifelse(FS_score < quantile(.$FS_score, .33, na.rm=TRUE),3,
+                             ifelse(FS_score < quantile(.$FS_score, .67, na.rm=TRUE),2,1))) %>%
   mutate(bio.food_score = ifelse(biodiv_score %in% 1 & food_score %in% 1, 1,
-                                 ifelse(biodiv_score %in% 2 & food_score %in% 1, 2,
-                                        ifelse(biodiv_score %in% 1 * food_score %in% 2, 3, 4)))) %>%
+                                 ifelse(biodiv_score %in% 1 & food_score %in% 2, 2,
+                                        ifelse(biodiv_score%in% 1 & food_score %in% 3, 3,
+                                               ifelse(biodiv_score %in% 2 & food_score %in% 1, 4,
+                                                      ifelse(biodiv_score %in% 2 & food_score %in% 2, 5,
+                                                             ifelse(biodiv_score %in% 2 & food_score %in% 3, 6,
+                                                                    ifelse(biodiv_score %in% 3 & food_score %in% 1, 7,
+                                                                           ifelse(biodiv_score %in% 3 & food_score %in% 2, 8, 9))))))))) %>%
   mutate(bio.food_score = ifelse(is.na(biodiv_score) | is.na(food_score), 0, bio.food_score))
-         
-         
-  
+
+
+
 
 # Making a function for mapping
 # This will probably save me a bit of time
@@ -115,11 +122,18 @@ biodiv.food.map[!is.na(country.map) & is.na(biodiv.food.map)] <- 0
 # Creating colour template
 # These values will need to be changed
 # But should give general idea
-pal = c("#DDDDDD", # Grey
+pal = c("#DDDDDD", # Grey. Countries not in data set
         "#e6e1bc", # Low for both
-        "#5bc2af", # High biodiversity, low food insecurity
-        "#eca24d", # low biodiversity, high food insecurity
-        "#735245") # High for both
+        "#eca24d", # Medium food insecurity, low biodiversity
+        '#db4224', # High food insecurity, low biodiversity
+        "#5bc2af", # Low food insecurity, medium biodiversity
+        "#AD9A81", # Medium food insecurity, medium biodiversity
+        "#A74A35", # High food insecurity, medium biodiversity
+        '#0a6165', # Low food insecurity, high biodiversity
+        "#3F5A55", # Medium food insecurity, high biodiversity
+        "#735245") # High food insecurity, high biodiversity
+
+
 
 # Getting world borders
 #
@@ -146,10 +160,15 @@ bio.food.plot = ggplot() +
                                   'High Biodiversity, Food Insecure')) +
   labs(fill = 'Biodiversity and Food Security Index') +
   theme_minimal() +
-  geom_rect(aes(xmin = -14000000, xmax = -11500000,ymin = -7000000, ymax = -4500000), fill = pal[2]) + # These rectangles are for the legend
-  geom_rect(aes(xmin = -11500000, xmax = -9000000,ymin = -7000000, ymax = -4500000), fill = pal[3]) +
-  geom_rect(aes(xmin = -14000000, xmax = -11500000,ymin = -4500000, ymax = -2000000), fill = pal[4]) +
-  geom_rect(aes(xmin = -11500000, xmax = -9000000,ymin = -4500000, ymax = -2000000), fill = pal[5]) +
+  geom_rect(aes(xmin = -14000000, xmax = -12333333,ymin = -7000000, ymax = -5333333), fill = pal[2]) + # These rectangles are for the legend
+  geom_rect(aes(xmin = -12333333, xmax = -10666667,ymin = -7000000, ymax = -5333333), fill = pal[5]) +
+  geom_rect(aes(xmin = -10666667, xmax = -9000000,ymin = -7000000, ymax = -5333333), fill = pal[8]) +
+  geom_rect(aes(xmin = -14000000, xmax = -12333333,ymin = -5333333, ymax = -3666667), fill = pal[3]) +
+  geom_rect(aes(xmin = -12333333, xmax = -10666667,ymin = -5333333, ymax = -3666667), fill = pal[6]) +
+  geom_rect(aes(xmin = -10666667, xmax = -9000000,ymin = -5333333, ymax = -3666667), fill = pal[9]) +
+  geom_rect(aes(xmin = -14000000, xmax = -12333333,ymin = -3666667, ymax = -2000000), fill = pal[4]) +
+  geom_rect(aes(xmin = -12333333, xmax = -10666667,ymin = -3666667, ymax = -2000000), fill = pal[7]) +
+  geom_rect(aes(xmin = -10666667, xmax = -9000000,ymin = -3666667, ymax = -2000000), fill = pal[10]) +
   # annotate(geom = 'text', label = 'Legend', x = -12500000, y = -1500000, hjust = .5, vjust = .5) + # Legend title
   annotate(geom = 'text', label = 'Biodiversity', x = -11500000, y = -9000000, hjust = .5, vjust = .5) + # biodiversity axis label
   annotate(geom = 'text', label = 'Food Insecurity', x = -17040096, y = -4500000, hjust = .5, vjust = .5, angle = 90) + # food security axis label
@@ -168,8 +187,5 @@ bio.food.plot = ggplot() +
 
 bio.food.plot
 
-ggsave("Figs/Biodiv Food Map 2.pdf",
+ggsave("Figs/Biodiv Food Map 3.pdf",
        units = 'in', width = 10, height = 10)
-
-
-
