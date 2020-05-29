@@ -1,0 +1,123 @@
+﻿Country,ISO,EIDs,Effort,EID_effort
+USA,USA,37,3,12.3
+Australia,AUS,13,2,6.5
+Sudan,SDN,4,1,4
+Argentina,ARG,3,1,3
+Bulgaria,BGR,3,1,3
+DR Congo,COD,3,1,3
+Spain,ESP,3,1,3
+United Kingdom,GBR,7,3,2.3
+Brazil,BRA,4,2,2
+China,CHN,4,2,2
+Costa Rica,CRI,2,1,2
+Croatia,HRV,2,1,2
+Egypt,EGY,2,1,2
+Japan,JPN,4,2,2
+Madagascar,MDG,2,1,2
+Malaysia,MYS,2,1,2
+Russian Federation,RUS,2,1,2
+Senegal,SEN,2,1,2
+Switzerland,CHE,2,1,2
+Tibet,TIB,2,1,2
+Uganda,UGA,2,1,2
+Venezuela,VEN,2,1,2
+Germany,DEU,5,3,1.7
+Canada,CAN,4,3,1.3
+Bolivia,BOL,1,1,1
+Bosnia,BIH,1,1,1
+Burundi,BDI,1,1,1
+Central African Republic,CAF,1,1,1
+Cote d'Ivoire,CIV,1,1,1
+Cuba,CUB,1,1,1
+France,FRA,3,3,1
+Hong Kong,HKG,1,1,1
+Hungary,HUN,1,1,1
+India,IND,2,2,1
+Indonesia,IDN,1,1,1
+Italy,ITA,3,3,1
+Kazakhstan,KAZ,1,1,1
+Libya,LBY,1,1,1
+Malawi,MWI,1,1,1
+Mexico,MEX,2,2,1
+Mozambique,MOZ,1,1,1
+Nigeria,NGA,1,1,1
+Norway,NOR,1,1,1
+Oman,OMN,1,1,1
+Papua New Guinea,PNG,1,1,1
+Paraguay,PRY,1,1,1
+Peru,PER,1,1,1
+Romania,ROU,1,1,1
+Saudi Arabia,SAU,1,1,1
+Serbia,SRB,1,1,1
+Thailand,THA,2,2,1
+Zimbabwe,ZWE,1,1,1
+Sweden,SWE,2,3,0.7
+South Africa,ZAF,1,2,0.5
+Algeria,DZA,0,1,0
+Angola,AGO,0,1,0
+Austria,AUT,0,2,0
+Azerbaijan,AZE,0,1,0
+Bahrain,BHR,0,1,0
+Bangladesh,BGD,0,1,0
+Belarus,BLR,0,1,0
+Belgium,BEL,0,1,0
+Benin,BEN,0,1,0
+Botswana,BWA,0,1,0
+Burkina Faso,BFA,0,1,0
+Cambodia,KHM,0,1,0
+Cameroon,CMR,0,1,0
+Chad,TCD,0,1,0
+Chile,CHL,0,1,0
+Colombia,COL,0,1,0
+Czech Republic,CZE,0,1,0
+Denmark,DNK,0,1,0
+Dominican Republic,DOM,0,1,0
+Ecuador,ECU,0,1,0
+El Salvador,SLV,0,1,0
+Ethiopia,ETH,0,1,0
+Finland,FIN,0,2,0
+Ghana,GHA,0,1,0
+Greece,GRC,0,1,0
+Guatemala,GTM,0,1,0
+Guinea,GIN,0,1,0
+Haiti,HTI,0,1,0
+Honduras,HND,0,1,0
+Ireland,IRL,0,1,0
+Israel,ISR,0,1,0
+Jordan,JOR,0,1,0
+Kenya,KEN,0,2,0
+Kuwait,KWT,0,1,0
+Laos,LAO,0,1,0
+Mali,MLI,0,1,0
+Morocco,MAR,0,1,0
+Myanmar,MMR,0,1,0
+Nepal,NPL,0,1,0
+Netherlands,NLD,0,1,0
+New Zealand,NZL,0,1,0
+Nicaragua,NIC,0,1,0
+Niger,NER,0,1,0
+Pakistan,PAK,0,1,0
+Panama,PAN,0,1,0
+Philippines,PHL,0,1,0
+Poland,POL,0,1,0
+Portugal,PRT,0,1,0
+Qatar,QAT,0,1,0
+Republic of Korea,KOR,0,1,0
+Rwanda,RWA,0,1,0
+Sierra Leone,SLE,0,1,0
+Singapore,SGP,0,1,0
+Slovakia,SVK,0,1,0
+Sri Lanka,LKA,0,1,0
+Syria,SYR,0,1,0
+Tajikistan,TJK,0,1,0
+Tanzania,TZA,0,1,0
+Togo,TGO,0,1,0
+Tunisia,TUN,0,1,0
+Turkey,TUR,0,1,0
+Ukraine,UKR,0,1,0
+United Arab Emirates,ARE,0,1,0
+Uruguay,URY,0,1,0
+Uzbekistan,UZB,0,1,0
+Viet Nam,VNM,0,1,0
+Yemen,YEM,0,1,0
+Zambia,ZMB,0,1,0
