@@ -1,0 +1,263 @@
+Continent_Name,Continent_Code,ISO2,ISO3,Country_Number
+Asia,AS,AF,AFG,4
+Europe,EU,AL,ALB,8
+Antarctica,AN,AQ,ATA,10
+Africa,AF,DZ,DZA,12
+Oceania,OC,AS,ASM,16
+Europe,EU,AD,AND,20
+Africa,AF,AO,AGO,24
+North America,NA,AG,ATG,28
+Europe,EU,AZ,AZE,31
+Asia,AS,AZ,AZE,31
+South America,SA,AR,ARG,32
+Oceania,OC,AU,AUS,36
+Europe,EU,AT,AUT,40
+North America,NA,BS,BHS,44
+Asia,AS,BH,BHR,48
+Asia,AS,BD,BGD,50
+Europe,EU,AM,ARM,51
+Asia,AS,AM,ARM,51
+North America,NA,BB,BRB,52
+Europe,EU,BE,BEL,56
+North America,NA,BM,BMU,60
+Asia,AS,BT,BTN,64
+South America,SA,BO,BOL,68
+Europe,EU,BA,BIH,70
+Africa,AF,BW,BWA,72
+Antarctica,AN,BV,BVT,74
+South America,SA,BR,BRA,76
+North America,NA,BZ,BLZ,84
+Asia,AS,IO,IOT,86
+Oceania,OC,SB,SLB,90
+North America,NA,VG,VGB,92
+Asia,AS,BN,BRN,96
+Europe,EU,BG,BGR,100
+Asia,AS,MM,MMR,104
+Africa,AF,BI,BDI,108
+Europe,EU,BY,BLR,112
+Asia,AS,KH,KHM,116
+Africa,AF,CM,CMR,120
+North America,NA,CA,CAN,124
+Africa,AF,CV,CPV,132
+North America,NA,KY,CYM,136
+Africa,AF,CF,CAF,140
+Asia,AS,LK,LKA,144
+Africa,AF,TD,TCD,148
+South America,SA,CL,CHL,152
+Asia,AS,CN,CHN,156
+Asia,AS,TW,TWN,158
+Asia,AS,CX,CXR,162
+Asia,AS,CC,CCK,166
+South America,SA,CO,COL,170
+Africa,AF,KM,COM,174
+Africa,AF,YT,MYT,175
+Africa,AF,CG,COG,178
+Africa,AF,CD,COD,180
+Oceania,OC,CK,COK,184
+North America,NA,CR,CRI,188
+Europe,EU,HR,HRV,191
+North America,NA,CU,CUB,192
+Europe,EU,CY,CYP,196
+Asia,AS,CY,CYP,196
+Europe,EU,CZ,CZE,203
+Africa,AF,BJ,BEN,204
+Europe,EU,DK,DNK,208
+North America,NA,DM,DMA,212
+North America,NA,DO,DOM,214
+South America,SA,EC,ECU,218
+North America,NA,SV,SLV,222
+Africa,AF,GQ,GNQ,226
+Africa,AF,ET,ETH,231
+Africa,AF,ER,ERI,232
+Europe,EU,EE,EST,233
+Europe,EU,FO,FRO,234
+South America,SA,FK,FLK,238
+Antarctica,AN,GS,SGS,239
+Oceania,OC,FJ,FJI,242
+Europe,EU,FI,FIN,246
+Europe,EU,AX,ALA,248
+Europe,EU,FR,FRA,250
+South America,SA,GF,GUF,254
+Oceania,OC,PF,PYF,258
+Antarctica,AN,TF,ATF,260
+Africa,AF,DJ,DJI,262
+Africa,AF,GA,GAB,266
+Europe,EU,GE,GEO,268
+Asia,AS,GE,GEO,268
+Africa,AF,GM,GMB,270
+Asia,AS,PS,PSE,275
+Europe,EU,DE,DEU,276
+Africa,AF,GH,GHA,288
+Europe,EU,GI,GIB,292
+Oceania,OC,KI,KIR,296
+Europe,EU,GR,GRC,300
+North America,NA,GL,GRL,304
+North America,NA,GD,GRD,308
+North America,NA,GP,GLP,312
+Oceania,OC,GU,GUM,316
+North America,NA,GT,GTM,320
+Africa,AF,GN,GIN,324
+South America,SA,GY,GUY,328
+North America,NA,HT,HTI,332
+Antarctica,AN,HM,HMD,334
+Europe,EU,VA,VAT,336
+North America,NA,HN,HND,340
+Asia,AS,HK,HKG,344
+Europe,EU,HU,HUN,348
+Europe,EU,IS,ISL,352
+Asia,AS,IN,IND,356
+Asia,AS,ID,IDN,360
+Asia,AS,IR,IRN,364
+Asia,AS,IQ,IRQ,368
+Europe,EU,IE,IRL,372
+Asia,AS,IL,ISR,376
+Europe,EU,IT,ITA,380
+Africa,AF,CI,CIV,384
+North America,NA,JM,JAM,388
+Asia,AS,JP,JPN,392
+Europe,EU,KZ,KAZ,398
+Asia,AS,KZ,KAZ,398
+Asia,AS,JO,JOR,400
+Africa,AF,KE,KEN,404
+Asia,AS,KP,PRK,408
+Asia,AS,KR,KOR,410
+Asia,AS,KW,KWT,414
+Asia,AS,KG,KGZ,417
+Asia,AS,LA,LAO,418
+Asia,AS,LB,LBN,422
+Africa,AF,LS,LSO,426
+Europe,EU,LV,LVA,428
+Africa,AF,LR,LBR,430
+Africa,AF,LY,LBY,434
+Europe,EU,LI,LIE,438
+Europe,EU,LT,LTU,440
+Europe,EU,LU,LUX,442
+Asia,AS,MO,MAC,446
+Africa,AF,MG,MDG,450
+Africa,AF,MW,MWI,454
+Asia,AS,MY,MYS,458
+Asia,AS,MV,MDV,462
+Africa,AF,ML,MLI,466
+Europe,EU,MT,MLT,470
+North America,NA,MQ,MTQ,474
+Africa,AF,MR,MRT,478
+Africa,AF,MU,MUS,480
+North America,NA,MX,MEX,484
+Europe,EU,MC,MCO,492
+Asia,AS,MN,MNG,496
+Europe,EU,MD,MDA,498
+Europe,EU,ME,MNE,499
+North America,NA,MS,MSR,500
+Africa,AF,MA,MAR,504
+Africa,AF,MZ,MOZ,508
+Asia,AS,OM,OMN,512
+Africa,AF,NA,NAM,516
+Oceania,OC,NR,NRU,520
+Asia,AS,NP,NPL,524
+Europe,EU,NL,NLD,528
+North America,NA,AN,ANT,530
+North America,NA,CW,CUW,531
+North America,NA,AW,ABW,533
+North America,NA,SX,SXM,534
+North America,NA,BQ,BES,535
+Oceania,OC,NC,NCL,540
+Oceania,OC,VU,VUT,548
+Oceania,OC,NZ,NZL,554
+North America,NA,NI,NIC,558
+Africa,AF,NE,NER,562
+Africa,AF,NG,NGA,566
+Oceania,OC,NU,NIU,570
+Oceania,OC,NF,NFK,574
+Europe,EU,NO,NOR,578
+Oceania,OC,MP,MNP,580
+Oceania,OC,UM,UMI,581
+North America,NA,UM,UMI,581
+Oceania,OC,FM,FSM,583
+Oceania,OC,MH,MHL,584
+Oceania,OC,PW,PLW,585
+Asia,AS,PK,PAK,586
+North America,NA,PA,PAN,591
+Oceania,OC,PG,PNG,598
+South America,SA,PY,PRY,600
+South America,SA,PE,PER,604
+Asia,AS,PH,PHL,608
+Oceania,OC,PN,PCN,612
+Europe,EU,PL,POL,616
+Europe,EU,PT,PRT,620
+Africa,AF,GW,GNB,624
+Asia,AS,TL,TLS,626
+North America,NA,PR,PRI,630
+Asia,AS,QA,QAT,634
+Africa,AF,RE,REU,638
+Europe,EU,RO,ROU,642
+Europe,EU,RU,RUS,643
+Asia,AS,RU,RUS,643
+Africa,AF,RW,RWA,646
+North America,NA,BL,BLM,652
+Africa,AF,SH,SHN,654
+North America,NA,KN,KNA,659
+North America,NA,AI,AIA,660
+North America,NA,LC,LCA,662
+North America,NA,MF,MAF,663
+North America,NA,PM,SPM,666
+North America,NA,VC,VCT,670
+Europe,EU,SM,SMR,674
+Africa,AF,ST,STP,678
+Asia,AS,SA,SAU,682
+Africa,AF,SN,SEN,686
+Europe,EU,RS,SRB,688
+Africa,AF,SC,SYC,690
+Africa,AF,SL,SLE,694
+Asia,AS,SG,SGP,702
+Europe,EU,SK,SVK,703
+Asia,AS,VN,VNM,704
+Europe,EU,SI,SVN,705
+Africa,AF,SO,SOM,706
+Africa,AF,ZA,ZAF,710
+Africa,AF,ZW,ZWE,716
+Europe,EU,ES,ESP,724
+Africa,AF,SS,SSD,728
+Africa,AF,EH,ESH,732
+Africa,AF,SD,SDN,736
+South America,SA,SR,SUR,740
+Europe,EU,SJ,SJM,744
+Africa,AF,SZ,SWZ,748
+Europe,EU,SE,SWE,752
+Europe,EU,CH,CHE,756
+Asia,AS,SY,SYR,760
+Asia,AS,TJ,TJK,762
+Asia,AS,TH,THA,764
+Africa,AF,TG,TGO,768
+Oceania,OC,TK,TKL,772
+Oceania,OC,TO,TON,776
+North America,NA,TT,TTO,780
+Asia,AS,AE,ARE,784
+Africa,AF,TN,TUN,788
+Europe,EU,TR,TUR,792
+Asia,AS,TR,TUR,792
+Asia,AS,TM,TKM,795
+North America,NA,TC,TCA,796
+Oceania,OC,TV,TUV,798
+Africa,AF,UG,UGA,800
+Europe,EU,UA,UKR,804
+Europe,EU,MK,MKD,807
+Africa,AF,EG,EGY,818
+Europe,EU,GB,GBR,826
+Europe,EU,GG,GGY,831
+Europe,EU,JE,JEY,832
+Europe,EU,IM,IMN,833
+Africa,AF,TZ,TZA,834
+North America,NA,US,USA,840
+North America,NA,VI,VIR,850
+Africa,AF,BF,BFA,854
+South America,SA,UY,URY,858
+Asia,AS,UZ,UZB,860
+South America,SA,VE,VEN,862
+Oceania,OC,WF,WLF,876
+Oceania,OC,WS,WSM,882
+Asia,AS,YE,YEM,887
+Africa,AF,ZM,ZMB,894
+Oceania,OC,XX,,
+Asia,AS,XE,,
+Asia,AS,XD,,
+Asia,AS,XS,,
