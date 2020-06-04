@@ -94,6 +94,8 @@ mostgame <- d1 %>%
   filter(Country != "NA")
 
 f3 <- ggplot(mostgame, aes (x = reorder(Country, allprotien_percap))) +
+  # This is your issue - you're defining the colour inside the aes() - the aesthetics. 
+  # So ggplot tries to define colour as something within the data called "red"
   geom_point (aes(y = allprotien_percap, colour = "red")) +
   geom_point (aes(y = protiennogame_ppd, colour  = "black")) +
   labs (x = "Country", y = "Total estimated protien intake per person per day") +
@@ -105,3 +107,19 @@ f3 <- ggplot(mostgame, aes (x = reorder(Country, allprotien_percap))) +
   annotate(geom="text", x=30, y=47, label="Minimum intake (women)", angle = 270, colour = "red", size = 3.5, hjust = 0) +
   annotate(geom="text", x=30, y=57, label="Minimum intake (men)", angle = 270, colour = "blue", size = 3.5, hjust = 0)
 f3
+
+# DRW edit:
+ggplot(mostgame, 
+       aes (x = reorder(Country, allprotien_percap))) +
+  geom_point (aes(y = allprotien_percap, colour = "red")) 
+# Look at the legend: ggplot has got confused and defined your colour variable as a variable
+# called "colour" and with the value "red"
+ggplot(mostgame, 
+       aes (x = reorder(Country, allprotien_percap))) +
+  geom_point (aes(y = allprotien_percap),
+              colour = "red") 
+# Outside the aesthetics arguments, you're defining all the colour as red, rather than 
+# making ggplot look for a variable "colour"
+
+
+  
