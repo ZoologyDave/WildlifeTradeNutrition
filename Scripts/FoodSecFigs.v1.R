@@ -93,13 +93,15 @@ mostgame <- d1 %>%
   filter(allprotien_percap != "NA") %>%
   filter(Country != "NA")
 
-
-f3 <- ggplot(mostgame, aes (x = reorder(Country, allprotien_percap), y = value, color = variable)) +
-  geom_point (aes(y = allprotien_percap, col = "allprotien_percap")) +
-  geom_point (aes(y = protiennogame_ppd, col = "protiennogame_ppd")) +
+f3 <- ggplot(mostgame, aes (x = reorder(Country, allprotien_percap))) +
+  geom_point (aes(y = allprotien_percap, colour = "red")) +
+  geom_point (aes(y = protiennogame_ppd, colour  = "black")) +
   labs (x = "Country", y = "Total estimated protien intake per person per day") +
   geom_hline(yintercept=56, linetype="dashed", color = "blue") + 
   geom_hline(yintercept=46, linetype="dashed", color = "red") +
   theme_bw() +
-  coord_flip()
+  coord_flip() +
+  scale_color_discrete(name = "Scenarios", labels = c("Current estimated intake", "Estimated intake without wild meat")) +
+  annotate(geom="text", x=30, y=47, label="Minimum intake (women)", angle = 270, colour = "red", size = 3.5, hjust = 0) +
+  annotate(geom="text", x=30, y=57, label="Minimum intake (men)", angle = 270, colour = "blue", size = 3.5, hjust = 0)
 f3
