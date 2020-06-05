@@ -49,7 +49,38 @@ ggplot(mostg_mod,
        legend.text = element_text(size = 12)) +
   scale_colour_manual(values = c("Grey65", "tomato1"),
                       labels = c("Current protien consumption", "Protien consumption without wild meat")) +
-  labs (x = "Country", y = "National estimated protien intake per person per day (g)") +
+  labs (x = "Country", y = "National estimated protein intake per person per day (g)") +
+  geom_hline(yintercept=56, linetype="dashed", color = "dodgerblue3") + 
+  geom_hline(yintercept=46, linetype="dashed", color = "red")  +
+  coord_flip() +
+  annotate(geom="text", x=2, y=44, label="Minimum intake (women)", angle = 90, colour = "red", size = 3.5, hjust = 0) +
+  annotate(geom="text", x=2, y=54, label="Minimum intake (men)", angle = 90, colour = "dodgerblue3", size = 3.5, hjust = 0) +
+  # DRW: this is cool—didn't know you could do this
+  scale_x_discrete(labels=c("United Republic of Tanzania" = "Tanzania",
+                            "United States of America" = "USA",
+                            "Sudan (former)" = "Sudan"))
+
+# DRW edit for the legend:
+ggplot(mostg_mod, 
+       aes(x = reorder(COUNTRY, -PerCapProtein), 
+           y = PerCapProtein,
+           colour = Scenario)) + 
+  geom_point(size = 2.2) +
+  theme_bw() +
+  theme(legend.position=c(1,1),
+        legend.justification = c(1,1),
+        legend.box.margin = margin(c(10,10,10,10)),
+        axis.text.x = element_text(size = 11),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 14, face = "bold"),
+        axis.title.y = element_text(size = 14, face = "bold"),
+        legend.title = element_text(size = 14, face = "bold"),
+        legend.text = element_text(size = 12)) +
+  scale_colour_manual(values = c("Grey65", "tomato1"),
+                      labels = c("Current consumption", "Consumption without wild meat")) +
+  labs (x = NULL, 
+        y = "Protein consumption (g per person per day)",
+        colour = NULL) +
   geom_hline(yintercept=56, linetype="dashed", color = "dodgerblue3") + 
   geom_hline(yintercept=46, linetype="dashed", color = "red")  +
   coord_flip() +
@@ -58,6 +89,8 @@ ggplot(mostg_mod,
   scale_x_discrete(labels=c("United Republic of Tanzania" = "Tanzania",
                             "United States of America" = "USA",
                             "Sudan (former)" = "Sudan"))
+ggsave("Outputs/Prelim/FoodSecurity_DRWedit.pdf",
+       height = 20, width = 15, units = "cm")
 
 # with Pop size dot sizes
 ggplot(mostg_mod, 
