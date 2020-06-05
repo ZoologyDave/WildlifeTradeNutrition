@@ -35,19 +35,24 @@ mostg_mod$Population_millions <- mostg_mod$Pop / 1000000
 
 # with uniform dot sizes
 ggplot(mostg_mod, 
-       aes(x = reorder(COUNTRY, PerCapProtein), 
+       aes(x = reorder(COUNTRY, -PerCapProtein), 
            y = PerCapProtein,
            colour = Scenario)) + 
   geom_point(size = 2.2) +
+  theme_bw() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 11),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 14, face = "bold"),
+        axis.title.y = element_text(size = 14, face = "bold")) +
   scale_colour_manual(values = c("Grey65", "tomato1"),
-                      labels = c("Current protien consumption", "Protien consumption without wild meat")) + 
+                      labels = c("Current protien consumption", "Protien consumption without wild meat")) +
   labs (x = "Country", y = "National estimated protien intake per person per day (g)") +
   geom_hline(yintercept=56, linetype="dashed", color = "dodgerblue3") + 
-  geom_hline(yintercept=46, linetype="dashed", color = "red") +
-  theme_bw() +
+  geom_hline(yintercept=46, linetype="dashed", color = "red")  +
   coord_flip() +
-  annotate(geom="text", x=37, y=47, label="Minimum intake (women)", angle = 270, colour = "red", size = 3.5, hjust = 0) +
-  annotate(geom="text", x=37, y=57, label="Minimum intake (men)", angle = 270, colour = "dodgerblue3", size = 3.5, hjust = 0) +
+  annotate(geom="text", x=2, y=44, label="Minimum intake (women)", angle = 90, colour = "red", size = 3.5, hjust = 0) +
+  annotate(geom="text", x=2, y=54, label="Minimum intake (men)", angle = 90, colour = "dodgerblue3", size = 3.5, hjust = 0) +
   scale_x_discrete(labels=c("United Republic of Tanzania" = "Tanzania",
                             "United States of America" = "USA",
                             "Sudan (former)" = "Sudan"))
