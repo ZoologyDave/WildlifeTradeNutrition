@@ -8,16 +8,111 @@ library(ggplot2)
 
 rm(list=ls())
 
+# Get data -----
 prot <- read_csv("ProcessedData/GENusData_cleaned.csv")
 fs <- read_csv("Data/FoodSecurity.csv")
-
-d1 <- left_join(prot, fs, by = "ISO3")
-# This didn't work for me: "Data/FoodSecurity.csv" didn't have "ISO3"
 d1 <- left_join(prot, fs, by = c("ISO3" = "ISO"))
-
-View(d1)
 d1$animalprotien_nogame_pppd <- d1$allmeatpppd - d1$gamepppd
 
+# filter data by countries with >1% protien pppd from game -----
+mostgame <- d1 %>%
+  filter(percent_game_pppd > 1) %>%
+  filter(allprotien_percap > 0) %>%
+  filter(protiennogame_ppd != "NA") %>%
+  filter(allprotien_percap != "NA") %>%
+  filter(COUNTRY != "NA")
+
+mostg_mod1 <- mostgame %>%
+  select(COUNTRY, allprotien_percap, protiennogame_ppd) %>%
+  pivot_longer(cols = -COUNTRY,
+               names_to = "Scenario",
+               values_to = "PerCapProtein")
+
+mostg_mod <- left_join(mostg_mod1, prot, by = "COUNTRY")
+mostg_mod$Population_millions <- mostg_mod$Pop / 1000000
+
+# make plots -----
+
+# with uniform dot sizes
+ggplot(mostg_mod, 
+       aes(x = reorder(COUNTRY, -PerCapProtein), 
+           y = PerCapProtein,
+           colour = Scenario)) + 
+  geom_point(size = 2.2) +
+  theme_bw() +
+  theme(legend.position="top",
+        axis.text.x = element_text(size = 11),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 14, face = "bold"),
+        axis.title.y = element_text(size = 14, face = "bold"),
+       legend.title = element_text(size = 14, face = "bold"),
+       legend.text = element_text(size = 12)) +
+  scale_colour_manual(values = c("Grey65", "tomato1"),
+                      labels = c("Current protien consumption", "Protien consumption without wild meat")) +
+  labs (x = "Country", y = "National estimated protein intake per person per day (g)") +
+  geom_hline(yintercept=56, linetype="dashed", color = "dodgerblue3") + 
+  geom_hline(yintercept=46, linetype="dashed", color = "red")  +
+  coord_flip() +
+  annotate(geom="text", x=2, y=44, label="Minimum intake (women)", angle = 90, colour = "red", size = 3.5, hjust = 0) +
+  annotate(geom="text", x=2, y=54, label="Minimum intake (men)", angle = 90, colour = "dodgerblue3", size = 3.5, hjust = 0) +
+  # DRW: this is cool—didn't know you could do this
+  scale_x_discrete(labels=c("United Republic of Tanzania" = "Tanzania",
+                            "United States of America" = "USA",
+                            "Sudan (former)" = "Sudan"))
+
+# DRW edit for the legend:
+ggplot(mostg_mod, 
+       aes(x = reorder(COUNTRY, -PerCapProtein), 
+           y = PerCapProtein,
+           colour = Scenario)) + 
+  geom_point(size = 2.2) +
+  theme_bw() +
+  theme(legend.position=c(1,1),
+        legend.justification = c(1,1),
+        legend.box.margin = margin(c(10,10,10,10)),
+        axis.text.x = element_text(size = 11),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 14, face = "bold"),
+        axis.title.y = element_text(size = 14, face = "bold"),
+        legend.title = element_text(size = 14, face = "bold"),
+        legend.text = element_text(size = 12)) +
+  scale_colour_manual(values = c("Grey65", "tomato1"),
+                      labels = c("Current consumption", "Consumption without wild meat")) +
+  labs (x = NULL, 
+        y = "Protein consumption (g per person per day)",
+        colour = NULL) +
+  geom_hline(yintercept=56, linetype="dashed", color = "dodgerblue3") + 
+  geom_hline(yintercept=46, linetype="dashed", color = "red")  +
+  coord_flip() +
+  annotate(geom="text", x=2, y=44, label="Minimum intake (women)", angle = 90, colour = "red", size = 3.5, hjust = 0) +
+  annotate(geom="text", x=2, y=54, label="Minimum intake (men)", angle = 90, colour = "dodgerblue3", size = 3.5, hjust = 0) +
+  scale_x_discrete(labels=c("United Republic of Tanzania" = "Tanzania",
+                            "United States of America" = "USA",
+                            "Sudan (former)" = "Sudan"))
+ggsave("Outputs/Prelim/FoodSecurity_DRWedit.pdf",
+       height = 20, width = 15, units = "cm")
+
+# with Pop size dot sizes
+ggplot(mostg_mod, 
+       aes(x = reorder(COUNTRY, PerCapProtein), 
+           y = PerCapProtein,
+           colour = Scenario,
+           size = Population_millions)) + 
+  geom_point() +
+  scale_colour_manual(values = c("Grey65", "tomato1"),
+                      labels = c("Current protien consumption", "Protien consumption without wild meat")) + 
+  labs (x = "Country", y = "National estimated protien intake per person per day (g)") +
+  geom_hline(yintercept=56, linetype="dashed", color = "dodgerblue3") + 
+  geom_hline(yintercept=46, linetype="dashed", color = "red") +
+  theme_bw() +
+  coord_flip() +
+  annotate(geom="text", x=37, y=47, label="Minimum intake (women)", angle = 270, colour = "red", size = 3.5, hjust = 0) +
+  annotate(geom="text", x=37, y=57, label="Minimum intake (men)", angle = 270, colour = "dodgerblue3", size = 3.5, hjust = 0) +
+  scale_x_discrete(labels=c("United Republic of Tanzania" = "Tanzania",
+                            "United States of America" = "USA",
+                            "Sudan (former)" = "Sudan"))
+
+# some other plots I tried but decided not to use -----
 lowfs <- d1 %>%
   filter(FS_rank > 80) %>%
   filter(allprotien_percap > 0) %>%
@@ -26,14 +121,14 @@ lowfs <- d1 %>%
   filter(allprotien_percap < 100)
 
 f1 <- ggplot(lowfs, 
-             aes (x = reorder(Country, allprotien_percap),
+             aes (x = reorder(COUNTRY, allprotien_percap),
                   y = value, # You don't actually need this because you're defining "y" in each point
                   color = variable)) + # You don't need this either, again, it's defined below
   geom_point (aes(y = allprotien_percap, 
                   col = "allprotien_percap")) + # Also unnecessary — this variable is what you're plotting, 
   # not a colour / grouping variable
   geom_point (aes(y = protiennogame_ppd, col = "protiennogame_ppd")) +
-  labs (x = "Country", y = "Total estimated protien intake per person per day") +
+  labs (x = "COUNTRY", y = "Total estimated protien intake per person per day") +
   geom_hline(yintercept=56, linetype="dashed", color = "blue") + 
   geom_hline(yintercept=46, linetype="dashed", color = "red") +
   theme_bw() +
@@ -43,14 +138,14 @@ f1
 # DRW edit: so the issue here is that you're plotting separate variables for the different points
 # Two ways you can do this:
 ggplot(lowfs, 
-       aes(x = reorder(Country, allprotien_percap))) + 
+       aes(x = reorder(COUNTRY, allprotien_percap))) + 
   geom_point(aes(y = allprotien_percap),
              # Add the colour manually here - you want all this variable to be coloured the same
              colour = "red") +
   geom_point(aes(y = protiennogame_ppd),
-              # Add the colour manually here
-              colour = "blue") +
-  labs (x = "Country", y = "Total estimated protien intake per person per day") +
+             # Add the colour manually here
+             colour = "blue") +
+  labs (x = "COUNTRY", y = "Total estimated protien intake per person per day") +
   geom_hline(yintercept=56, linetype="dashed", color = "blue") + 
   geom_hline(yintercept=46, linetype="dashed", color = "red") +
   theme_bw() +
@@ -59,67 +154,31 @@ ggplot(lowfs,
 # The more "ggplot" way of doing this, would be to reshape your data so that it is in the 
 # "long form". It might be easier to draw arrows with the other way though?
 lowfs_mod <- lowfs %>%
-  select(Country, allprotien_percap, protiennogame_ppd) %>%
-  pivot_longer(cols = -Country, 
+  select(COUNTRY, allprotien_percap, protiennogame_ppd) %>%
+  pivot_longer(cols = -COUNTRY, 
                names_to = "scenario",
                values_to = "PerCapProtein") 
 
 ggplot(lowfs_mod, 
-       aes(x = reorder(Country, PerCapProtein), 
+       aes(x = reorder(COUNTRY, PerCapProtein), 
            y = PerCapProtein,
            colour = scenario)) + 
   geom_point() +
   scale_colour_manual(values = c("Red", "Blue"),
                       labels = c("Current", "Without wild meat")) + 
-  labs (x = "Country", y = "Total estimated protien intake per person per day") +
+  labs (x = "COUNTRY", y = "Total estimated protien intake per person per day") +
   geom_hline(yintercept=56, linetype="dashed", color = "blue") + 
   geom_hline(yintercept=46, linetype="dashed", color = "red") +
   theme_bw() +
   coord_flip()
 
 
-f2<- ggplot(lowfs, aes (x = reorder(Country, allmeatpppd), y = value, color = variable)) +
+f2<- ggplot(lowfs, aes (x = reorder(COUNTRY, allmeatpppd), y = value, color = variable)) +
   geom_point (aes(y = allmeatpppd, col = "allmeatpppd")) +
   geom_point (aes(y = animalprotien_nogame_pppd, col = "animalprotien_nogame_pppd")) +
-  labs (x = "Country", y = "Total estimated animal protien intake per person per day") +
+  labs (x = "COUNTRY", y = "Total estimated animal protien intake per person per day") +
   theme_bw() +
   coord_flip()
 f2
 
-mostgame <- d1 %>%
-  filter(percent_game_pppd > 1) %>%
-  filter(allprotien_percap > 0) %>%
-  filter(protiennogame_ppd != "NA") %>%
-  filter(allprotien_percap != "NA") %>%
-  filter(Country != "NA")
 
-f3 <- ggplot(mostgame, aes (x = reorder(Country, allprotien_percap))) +
-  # This is your issue - you're defining the colour inside the aes() - the aesthetics. 
-  # So ggplot tries to define colour as something within the data called "red"
-  geom_point (aes(y = allprotien_percap, colour = "red")) +
-  geom_point (aes(y = protiennogame_ppd, colour  = "black")) +
-  labs (x = "Country", y = "Total estimated protien intake per person per day") +
-  geom_hline(yintercept=56, linetype="dashed", color = "blue") + 
-  geom_hline(yintercept=46, linetype="dashed", color = "red") +
-  theme_bw() +
-  coord_flip() +
-  scale_color_discrete(name = "Scenarios", labels = c("Current estimated intake", "Estimated intake without wild meat")) +
-  annotate(geom="text", x=30, y=47, label="Minimum intake (women)", angle = 270, colour = "red", size = 3.5, hjust = 0) +
-  annotate(geom="text", x=30, y=57, label="Minimum intake (men)", angle = 270, colour = "blue", size = 3.5, hjust = 0)
-f3
-
-# DRW edit:
-ggplot(mostgame, 
-       aes (x = reorder(Country, allprotien_percap))) +
-  geom_point (aes(y = allprotien_percap, colour = "red")) 
-# Look at the legend: ggplot has got confused and defined your colour variable as a variable
-# called "colour" and with the value "red"
-ggplot(mostgame, 
-       aes (x = reorder(Country, allprotien_percap))) +
-  geom_point (aes(y = allprotien_percap),
-              colour = "red") 
-# Outside the aesthetics arguments, you're defining all the colour as red, rather than 
-# making ggplot look for a variable "colour"
-
-
-  
