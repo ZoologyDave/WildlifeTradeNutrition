@@ -40,11 +40,13 @@ ggplot(mostg_mod,
            colour = Scenario)) + 
   geom_point(size = 2.2) +
   theme_bw() +
-  theme(legend.position="bottom",
+  theme(legend.position="top",
         axis.text.x = element_text(size = 11),
         axis.text.y = element_text(size = 10),
         axis.title.x = element_text(size = 14, face = "bold"),
-        axis.title.y = element_text(size = 14, face = "bold")) +
+        axis.title.y = element_text(size = 14, face = "bold"),
+       legend.title = element_text(size = 14, face = "bold"),
+       legend.text = element_text(size = 12)) +
   scale_colour_manual(values = c("Grey65", "tomato1"),
                       labels = c("Current protien consumption", "Protien consumption without wild meat")) +
   labs (x = "Country", y = "National estimated protien intake per person per day (g)") +
