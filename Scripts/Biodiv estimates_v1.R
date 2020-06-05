@@ -4,15 +4,20 @@ library(plyr)
 library(dplyr)
 library(countrycode)
 
+# Adding working directory
+git.directory <- "/Users/macuser/Documents/GitHub/WildlifeTradeNutrition"
+
 ###
 # data
 # I don't know why I used caps for the folder names
-land.dat <- read.csv("/Volumes/Citadel/Oxford/Research Projects/COVID MEAT ENV/DATA/LandDemandByCountry.csv", stringsAsFactors = FALSE)
-bio.occ.dat_glob <- read.csv("/Volumes/Citadel/Oxford/Research Projects/COVID MEAT ENV/DATA/Bio_estimates_occupation_global.csv", stringsAsFactors = FALSE)
-bio.trans.dat_glob <- read.csv("/Volumes/Citadel/Oxford/Research Projects/COVID MEAT ENV/DATA/Bio_estimates_transformation_global.csv", stringsAsFactors = FALSE)
+land.dat <- read.csv(paste0(git.directory,"/ProcessedData/LandDemandByCountry.csv"), stringsAsFactors = FALSE)
+land.dat <- land.dat %>% dplyr::rename(country_extra_arable_fallow_km = country_extra_crop_km)
 
-bio.occ.dat_reg <- read.csv("/Volumes/Citadel/Oxford/Research Projects/COVID MEAT ENV/DATA/Bio_estimates_occupation.csv", stringsAsFactors = FALSE)
-bio.trans.dat_reg <- read.csv("/Volumes/Citadel/Oxford/Research Projects/COVID MEAT ENV/DATA/Bio_estimates_transformation.csv", stringsAsFactors = FALSE)
+bio.occ.dat_glob <- read.csv(paste0(git.directory,"/Data/Bio_estimates_occupation_global.csv"), stringsAsFactors = FALSE)
+bio.trans.dat_glob <- read.csv(paste0(git.directory,"/Data/Bio_estimates_transformation_global.csv"), stringsAsFactors = FALSE)
+
+bio.occ.dat_reg <- read.csv(paste0(git.directory,"/Data/Bio_estimates_occupation.csv"), stringsAsFactors = FALSE)
+bio.trans.dat_reg <- read.csv(paste0(git.directory,"/Data/Bio_estimates_transformation.csv"), stringsAsFactors = FALSE)
 
 ###
 # Adding ISO3 codes to country names in bio data sets
@@ -148,7 +153,7 @@ out.dat[out.dat<0] <- 0
 ###
 # Writing file
 write.csv(out.dat,
-          "/Volumes/Citadel/Oxford/Research Projects/COVID MEAT ENV/Results/Biodiversity Estimates 28May2020.csv",
+          paste0(git.directory,"/ProcessedData/Biodiversity Estimates 5June2020.csv"),
           row.names = FALSE)
 
   
