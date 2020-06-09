@@ -1,3 +1,14 @@
+# Read me ----
+# Author: Hollie Booth, David Williams
+# Date: June 2020
+# Purpose: Cleans up the data from the GENuS data base and combines it with UN population data 
+#    so that we have the per country total of game protein consumption.
+# 
+# EDIT: Now also takes the data from Halpern et al 2019 and converts it to wildmeat protein
+#    and combines with GENuS.
+#
+# NOTE: I (DW) am going with GENuS if some countries have both. 
+#
 # Packages -----
 library(tidyverse)
 library(dplyr)
@@ -65,3 +76,28 @@ protein$protiennogame_ppd <- protein$allprotien_percap - protein$gamepppd
 # (in a new directory to separate out raw from processed) 
 write_csv(protein,
           path = "ProcessedData/GENusData_cleaned.csv")
+
+# HALPERN DATA ------
+# Clean up, load -----
+rm(list=ls())
+halpern <- read_csv("Data/Halpern2019_S2.csv")
+
+# Convert from tonnes "wet" into tonnes protein -----
+# I am using the unweighted means of Poore & Nemecek's data, specifically:
+# (RW + EO) / HSCW --Table S5
+# The protein content from Table S1
+# 
+# This translates as 13% protein 
+#
+halpern <- halpern %>%
+  select(iso_a3, 
+         game_t_per_year = Bushmeat) %>%
+  mutate(game_protein_kg_extra = game_t_per_year * .13 * 1000) %>%
+  filter(game_protein_kg_extra > 0)
+
+write_csv(halpern, 
+          path = "ProcessedData/Halpern2019BushmeatData.csv")
+
+
+
+
