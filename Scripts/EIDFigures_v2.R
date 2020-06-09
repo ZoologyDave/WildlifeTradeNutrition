@@ -10,6 +10,7 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 
 # Importing Data ----
+rm(list = ls())
 land_use_change <- read_csv("ProcessedData/LandDemandByCountry.csv")
 disease <- read_csv("ProcessedData/WIldlifeEIDs.csv")
 world <- ne_countries(scale = "medium", returnclass = "sf")
@@ -42,6 +43,32 @@ world <- world %>%
                                                 sep = "_"),
                                  ordered = TRUE))
 
+# Add in hatching for countries without LUC data ----
+# Filter to these countries
+# missing <- world %>%
+#   filter(COUNTRY == "Belgium")%>%
+#   as_Spatial()
+missing <- world %>%
+  filter(is.na(country_extra_total_km)) %>%
+  mutate(area = st_area(.),
+         area = as.numeric(area / 1000000)) %>%
+  filter(area > 50000) %>%# No point doing it for the tiny ones
+  as_Spatial()
+
+# Need to reproject for some reason?!
+missing <- spTransform(missing, "+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs")
+gIsValid(missing) # NO
+missing <- gBuffer(spgeom = missing, width = 0) 
+gIsValid(missing) # Yes
+
+# Create hatching
+missing <- world %>%
+  filter(Country == "Brazil") %>%
+  as_Spatial()
+missing <- hatched.SpatialPolygons(missing,
+                                   density = 1, angle = 45)
+
+plot(missing)
 # Plot -----
 luc_eid_plot <- ggplot(data = world,
        aes(fill = classification)) + 
