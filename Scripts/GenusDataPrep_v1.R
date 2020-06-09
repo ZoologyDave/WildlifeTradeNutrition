@@ -4,8 +4,8 @@
 # Purpose: Cleans up the data from the GENuS data base and combines it with UN population data 
 #    so that we have the per country total of game protein consumption.
 # 
-# EDIT: Now also takes the data from Halpern et al 2019 and converts it to wildmeat protein
-#    and combines with GENuS.
+# EDIT: Now also takes the data from FAO production and trade data, AND from Halpern et al 2019 
+#    and converts it to wildmeat protein 
 #
 # NOTE: I (DW) am going with GENuS if some countries have both. 
 #
@@ -77,26 +77,65 @@ protein$protiennogame_ppd <- protein$allprotien_percap - protein$gamepppd
 write_csv(protein,
           path = "ProcessedData/GENusData_cleaned.csv")
 
+# FAO Data -----
+rm(list=ls())
+fao_prod <- read_csv("Data/FAOGameProduction_2011.csv")
+fao_trade <- read_csv("Data/FAOGameTrade_2011.csv")
+
+# Calculate production plus imports minus exports -----
+fao_trade <- fao_trade %>%
+  mutate(ISO3 = countrycode(Area, 
+                            origin = "country.name", 
+                            destination = "iso3c")) %>%
+  select(ISO3, Element, Value) %>%
+  pivot_wider(names_from = Element,
+              values_from = Value) %>%
+  replace_na(list(`Import Quantity` = 0, 
+                  `Export Quantity` = 0)) %>%
+  mutate(balance_t = `Import Quantity` - `Export Quantity`)
+
+fao_consumption <- fao_prod %>%
+  mutate(ISO3 = countrycode(Area, 
+                            origin = "country.name", 
+                            destination = "iso3c")) %>%
+  select(ISO3, production_t = Value) %>%
+  full_join(., fao_trade %>%
+              select(ISO3, balance_t)) %>%
+  replace_na(list(production_t = 0,
+                  balance_t = 0)) %>%
+  mutate(consumption_t = production_t + balance_t,
+         consumption_t = if_else(consumption_t < 0, 
+                                 true = 0,
+                                 false = consumption_t))
 # HALPERN DATA ------
 # Clean up, load -----
-rm(list=ls())
+rm(fao_prod, fao_trade)
 halpern <- read_csv("Data/Halpern2019_S2.csv")
 
-# Convert from tonnes "wet" into tonnes protein -----
+# Any countries we don't have? ----
+included <- fao_consumption %>%
+  filter(consumption_t != 0)
+
+halpern <- halpern %>%
+  filter(Bushmeat >0,
+         !(iso_a3 %in% included$ISO3)) # Yup
+
+# Bind to FAO data and convert from tonnes "wet" into tonnes protein -----
 # I am using the unweighted means of Poore & Nemecek's data, specifically:
 # (RW + EO) / HSCW --Table S5
 # The protein content from Table S1
 # 
 # This translates as 13% protein 
-#
-halpern <- halpern %>%
-  select(iso_a3, 
-         game_t_per_year = Bushmeat) %>%
-  mutate(game_protein_kg_extra = game_t_per_year * .13 * 1000) %>%
+protein <- fao_consumption %>%
+  select(ISO3, consumption_t) %>%
+  bind_rows(., halpern %>%
+              select(ISO3 = iso_a3,
+                     consumption_t = Bushmeat)) %>%
+  mutate(game_protein_kg_extra = consumption_t * .13 * 1000) %>%
   filter(game_protein_kg_extra > 0)
 
-write_csv(halpern, 
-          path = "ProcessedData/Halpern2019BushmeatData.csv")
+write_csv(protein, 
+          path = "ProcessedData/FAO_Halpern2019BushmeatData.csv")
 
 
 
