@@ -25,4 +25,4 @@ out.dat <-
 
 # And writing file
 write.csv(out.dat,
-          "/Users/macuser/Documents/GitHub/WildlifeTradeNutrition/Data/EID By Country.csv")
+          "/Data/EID By Country.csv")
