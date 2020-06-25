@@ -95,9 +95,14 @@ p1<- ggplot(data = belfp %>%
          size = guide_legend(title.position="top", title.hjust = 0.5))
 p1
 # Saving
-ggsave("Figs/Bubble Plot Colour 1 12June2020.pdf", 
-       width = 10, height = 6, units = 'in')
+# ggsave("Figs/Bubble Plot Colour 1 12June2020.pdf", 
+       # width = 10, height = 6, units = 'in')
 
+# Adding a random data point to increase point size
+# This will need to be deleted in editing software
+belfp <-
+  rbind(belfp,
+        belfp[1,] %>% mutate(biodiv = -5, FS_rank = 10, percent_game_pppd = 75, COUNTRY = 'DELETE ME'))
 
 p2<- ggplot(data = belfp %>% 
               filter(percent_game_pppd > 0) %>%
@@ -110,16 +115,44 @@ p2<- ggplot(data = belfp %>%
                 fill = tot.cat)) + 
   geom_point(shape = 21) +
   scale_fill_manual(values = rev(pal2), labels = c('Low','Medium','High')) +
-  scale_y_continuous(trans = 'log10') +
+  scale_y_continuous(trans = 'log10', breaks = c(.001,.1,10),labels = c('0.001%','0.1%','10%')) +
   labs(x = "Food Insecurity Rank", y = "% of per capita animal protein from wild meat", 
        size = "Est. biodiversity loss (species driven to extinction)", fill = "Land Cover Change and EID Risk") +
   # geom_text(aes(label=COUNTRY.y), size=3, hjust = -0.4) +
   geom_text_repel(aes(label = COUNTRY), size = 3) +
   theme_bw() +
   theme(legend.position = 'bottom') +
-  guides(fill = guide_legend(title.position="top", title.hjust = 0.5),
+  guides(fill = guide_legend(title.position="top", title.hjust = 0.5, override.aes = list(size = 5)),
          size = guide_legend(title.position="top", title.hjust = 0.5))
 p2
 # Saving
-ggsave("Figs/Bubble Plot Colour 2 12June2020.pdf", 
+ggsave("Figs/Bubble Plot Colour 2 25June2020.pdf",
+       width = 10, height = 6, units = 'in')
+
+p2_linear<- ggplot(data = belfp %>% 
+              filter(percent_game_pppd > 0) %>%
+              filter(is.finite(percent_game_pppd)) %>%
+              filter(!is.na(tot.cat)) %>%
+              filter(!is.na(biodiv)),
+            aes(x = FS_rank,
+                y = percent_game_pppd,
+                size = biodiv, 
+                fill = tot.cat)) + 
+  geom_point(shape = 21) +
+  scale_fill_manual(values = rev(pal2), labels = c('Low','Medium','High')) +
+  scale_y_continuous(limits = c(0,80), 
+                     breaks = c(0,20,40,60,80),
+                     labels = paste0(c(0,20,40,60,80),"%")) +
+  labs(x = "Food Insecurity Rank", y = "% of per capita animal protein from wild meat", 
+       size = "Est. biodiversity loss (species driven to extinction)", fill = "Land Cover Change and EID Risk") +
+  # geom_text(aes(label=COUNTRY.y), size=3, hjust = -0.4) +
+  geom_text_repel(aes(label = COUNTRY), size = 3) +
+  theme_bw() +
+  theme(legend.position = 'bottom') +
+  guides(fill = guide_legend(title.position="top", title.hjust = 0.5, override.aes = list(size = 5)),
+         size = guide_legend(title.position="top", title.hjust = 0.5))
+
+
+p2_linear
+ggsave("Figs/Bubble Plot Colour 2 Linear Scale 25June2020.pdf",
        width = 10, height = 6, units = 'in')
