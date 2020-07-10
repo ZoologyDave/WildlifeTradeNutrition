@@ -71,6 +71,29 @@ pal2 <- c('#db4224','#eca24d','#e6e1bc')
 # pal2 <- colorRampPalette(pal2,bias = 1)
 # my.palette2 <- pal2(100)
 
+# Country labels -----
+labels <- belfp %>% 
+  filter(percent_game_pppd > 0,
+         is.finite(percent_game_pppd),
+         !is.na(tot.cat),
+         !is.na(biodiv),
+         !is.na(FS_rank)) %>%
+  select(COUNTRY) %>%
+  arrange(COUNTRY) %>%
+  mutate(plot_country = case_when(COUNTRY == "Venezuela (Bolivarian Republic of)" ~ "Tanzania",
+                                  COUNTRY == "United States of America" ~ "USA",
+                                  COUNTRY == "United Kingdom" ~ "UK",
+                                  COUNTRY == "Czech Republic" ~ "Czechia",
+                                  COUNTRY == "Bolivia (Plurinational State of)" ~ "Bolivia",
+                                  COUNTRY == "Cote d'Ivoire" ~ "Côte d'Ivoire", # THIS MIGHT BREAK THINGS! 
+                                  COUNTRY == "Sudan (former)" ~ "Sudan\n(former)",
+                                  COUNTRY %in% c("Norway", "Switzerland", "Finland", 
+                                                 "Netherlands", "Belgium", "Denmark", 
+                                                 "United Arab Emirates") ~ "", # Add any more you don't want to plot
+                                  TRUE ~ COUNTRY)) 
+
+belfp <- belfp %>%
+  left_join(., labels)
 
 # Hollie's first bubble plot -----
 p1<- ggplot(data = belfp %>% 
@@ -133,20 +156,26 @@ p2_linear<- ggplot(data = belfp %>%
               filter(percent_game_pppd > 0) %>%
               filter(is.finite(percent_game_pppd)) %>%
               filter(!is.na(tot.cat)) %>%
-              filter(!is.na(biodiv)),
+              filter(!is.na(biodiv)) %>%
+                filter(COUNTRY != 'DELETE ME'),
             aes(x = FS_rank,
                 y = percent_game_pppd,
                 size = biodiv, 
                 fill = tot.cat)) + 
   geom_point(shape = 21) +
+  scale_size_continuous(range = c(2,6)) + # This is to make the blobs bigger without using the "delete me" point
+  # I think this is a more accurate reflection of the changes between the values too
   scale_fill_manual(values = rev(pal2), labels = c('Low','Medium','High')) +
   scale_y_continuous(limits = c(0,80), 
                      breaks = c(0,20,40,60,80),
-                     labels = paste0(c(0,20,40,60,80),"%")) +
-  labs(x = "Food Insecurity Rank", y = "% of per capita animal protein from wild meat", 
-       size = "Est. biodiversity loss (species driven to extinction)", fill = "Land Cover Change and EID Risk") +
+                     labels = c(0,20,40,60,80)) +
+  coord_cartesian(clip = 'off') +
+  labs(x = "Food Insecurity Rank", 
+       y = "Animal protein from wild meat (%)", 
+       size = "Est. biodiversity loss (species driven to extinction)", 
+       fill = "Land Cover Change and EID Risk") +
   # geom_text(aes(label=COUNTRY.y), size=3, hjust = -0.4) +
-  geom_text_repel(aes(label = COUNTRY), size = 3) +
+  geom_text_repel(aes(label = plot_country), size = 3) +
   theme_bw() +
   theme(legend.position = 'bottom') +
   guides(fill = guide_legend(title.position="top", title.hjust = 0.5, override.aes = list(size = 5)),
