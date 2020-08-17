@@ -144,10 +144,10 @@ fao_halpern <- read_csv("ProcessedData/FAO_Halpern2019BushmeatData.csv")
 
 protein <- protein %>%
   left_join(., select(fao_halpern,ISO3, game_protein_kg_extra, source)) %>%
-  mutate(game_protein_kg_extra_pppd = game_protein_kg_extra / Pop / 365.25 * 1000,
+  mutate(game_protein_g_extra_pppd = game_protein_kg_extra / Pop / 365.25 * 1000,
          # Take the GENuS data if present, otherwise use FAO / Halpern
          percent_game_pppd = ifelse(is.na(percent_game_pppd), 
-                                    yes = game_protein_kg_extra_pppd / allmeatpppd * 100, 
+                                    yes = game_protein_g_extra_pppd / allmeatpppd * 100, 
                                     no = percent_game_pppd),
          source = ifelse(is.na(source), 
                          yes = "GENuS database",

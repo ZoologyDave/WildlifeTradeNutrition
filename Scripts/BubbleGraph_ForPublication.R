@@ -1,5 +1,6 @@
 # READ ME: 
-# Taking the processed data from XXXX and producing Figure 2
+# Taking the processed data from LandUseCalcs_ForPublication.R, GenusDataPrep_ForPublication.R,
+# ...OTHER SCRIPTS... and producing Figure 2
 
 rm(list=ls())
 

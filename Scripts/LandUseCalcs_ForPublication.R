@@ -1,8 +1,10 @@
 # Read me ----
+# Author: David Williams
 # Taking the LCA data from Poore & Nemecek (provided by Mike Clark) and linking it to estimates
 # of wild meat consumption in each country
 #
-# This version uses region-specific LCAs
+# This version uses region-specific LCAs, and uses the global averages where
+# these are missing
 #
 # Packages -----
 library(tidyverse)
@@ -12,8 +14,8 @@ options(tibble.width = Inf)
 rm(list=ls())
 
 # Load LCA and GENus data -----
-protein <- read_csv("ProcessedData/GENusData_cleaned.csv")
-fao_halpern <- read_csv("ProcessedData/FAO_Halpern2019BushmeatData.csv")
+protein <- read_csv("ProcessedData/AllGameConsumptionData.csv")
+# fao_halpern <- read_csv("ProcessedData/FAO_Halpern2019BushmeatData.csv")
 # First time: clean up lca data to match protein names
 # lca <- read_csv("Data/Region Land Estimates.csv")
 # lca <- lca %>%
@@ -72,8 +74,8 @@ conventional_prot <- protein %>%
          check = sum(Proportion)) %>%
   ungroup()
   
-# b) Ones we're not sure of. I don't think we need to worry about the fact that dried is dried
-#    because everything is done in protein
+# b) Ones we're not sure of. 
+# NB. It doesn't matter if meat is dried, because we're standardising to grams of protein
 unconventional_prot <- protein %>%
   select(ISO3, types) %>%
   pivot_longer(-ISO3,
@@ -100,13 +102,9 @@ conventional_prot <- conventional_prot %>%
   ungroup()
 range(conventional_prot$check, na.rm = TRUE)
 
-# 2) Combine with Halpern data ----
+# 2) Select just the protein from game ----
 game <- protein %>%
-  select(ISO3, COUNTRY, gamepcpa) %>%
-  left_join(., fao_halpern) %>%
-  mutate(game_kg_protein_year = case_when(is.na(gamepcpa) ~ game_protein_kg_extra,
-                                          gamepcpa == 0 ~ game_protein_kg_extra,
-                                          TRUE ~ gamepcpa))
+  select(ISO3, COUNTRY, game_protein_kg_extra)
 
 # 3) Assign game in these proportions -----
 # Get missing countries from FBS ----
@@ -114,8 +112,8 @@ game <- protein %>%
 # Need to check FAO food balance sheets for this
 # Which countries
 needed <- game %>%
-  filter(!is.na(game_kg_protein_year),
-         game_kg_protein_year > 0)
+  filter(!is.na(game_protein_kg_extra),
+         game_protein_kg_extra > 0)
 
 missing <- conventional_prot %>%
   filter(is.na(Proportion),
@@ -156,54 +154,15 @@ conventional_prot <- missing_props %>%
 
 # Now assign game protein in these proportions
 land_grab <- game %>%
-  filter(!is.na(game_kg_protein_year),
-         game_kg_protein_year > 0) %>%
-  select(ISO3, game_kg_protein_year) %>%
+  filter(!is.na(game_protein_kg_extra),
+         game_protein_kg_extra > 0) %>%
+  select(ISO3, game_protein_kg_extra) %>%
   left_join(conventional_prot, .) %>%
-  mutate(kg_extra = Proportion * game_kg_protein_year) %>%
+  mutate(kg_extra = Proportion * game_protein_kg_extra) %>%
   mutate(Region = countrycode(ISO3, origin = "iso3c", destination = "region23")) 
 
 # 4) Calculate land-grab ----
-# # 4.1) Which regions for missing data? [First time only] ----
-# # Which regions are most similar?
-# ggplot(data = lca %>%
-#          filter(Food.Group %in% c("Bovine Meat (Beef Herd)",
-#                                   "Pig Meat",
-#                                   "Mutton & Goat Meat",
-#                                   "Poultry Meat")),
-#        aes(x = Region,
-#            y = Crop_m2_kg_protein,
-#            fill = Region)) +
-#   facet_wrap(~Food.Group) +
-#   geom_bar(stat = "identity") +
-#   labs(x = NULL) +
-#   theme(legend.position = c(1,1),
-#         legend.justification = c(1,1),
-#         axis.text.x = element_text(angle = 90)) +
-#   guides(fill = guide_legend(ncol = 2))
-# ggsave("Outputs/Prelim/LCAPerRegion_crop.png",
-#        height = 20, width = 25, units = "cm")
-
-# ggplot(data = lca %>%
-#          filter(Food.Group %in% c("Bovine Meat (Beef Herd)",
-#                                   "Pig Meat",
-#                                   "Mutton & Goat Meat",
-#                                   "Poultry Meat")),
-#        aes(x = Region,
-#            y = Pasture_m2_kg_protein, 
-#            fill = Region)) + 
-#   facet_wrap(~Food.Group) + 
-#   geom_bar(stat = "identity") + 
-#   labs(x = NULL) + 
-#   theme(legend.position = c(1,0.4),
-#         legend.justification = c(1,1),
-#         axis.text.x = element_text(angle = 90)) + 
-#   guides(fill = guide_legend(ncol = 2))
-# ggsave("Outputs/Prelim/LCAPerRegion_pasture.png",
-#        height = 20, width = 25, units = "cm")
-# 
-
-# 4.2) Link these to the LCA data -----
+# 4.1) Link estimates to the LCA data -----
 land_grab <- land_grab %>%
   left_join(., select(lca,
                       Region, 
@@ -258,60 +217,3 @@ land_grab_country <- land_grab %>%
 
 write_csv(land_grab_country,
           "ProcessedData/LandDemandByCountry.csv")
-
-# 5) Make some figures ----
-plot_data <- land_grab_country %>%
-  arrange(-country_extra_total_km) %>%
-  filter(country_extra_total_km > 0) %>%
-  pivot_longer(cols = country_extra_pasture_km:country_extra_total_km,
-               names_to = "land_type",
-               values_to = "km_2") %>% 
-  filter(land_type != "country_extra_total_km") %>%
-  mutate(country = factor(country, levels = unique(country), ordered = TRUE),
-         land_type = gsub("(^.*extra_)(.*)(_km)", "\\2", land_type))
-  
-country_plot <- ggplot(data = plot_data,
-       aes(x = country, y = km_2, fill = land_type)) +
-  geom_bar(stat = "identity") + 
-  scale_fill_manual(values = c("gold", "green4")) + 
-  labs(x = NULL, 
-       y = expression(paste("Area required (", km^2, ")")), 
-       fill = NULL) +
-  theme_bw() + 
-  theme(axis.text.x = element_text(angle = 90, 
-                                   hjust = 1, 
-                                   vjust = 0.5),
-        legend.position = c(.9, .9))
-
-library(Cairo)
-ggsave(plot = country_plot, 
-       filename = "Outputs/Prelim/LandGrab_v3.pdf", 
-       device = cairo_pdf, # This is for the circumflex on Cote d'Ivoire
-       height = 15, width = 30, units = "cm")
-
-ggsave(plot = country_plot, 
-       filename = "Outputs/Prelim/LandGrab_v3.png",
-       height = 15, width = 30, units = "cm")
-
-# 6) Get some summary figures -----
-land_grab_country %>%
-  summarise(total_pasture = sum(country_extra_pasture_km), # 193783
-            total_crop = sum(country_extra_crop_km), #48828
-            total = sum(country_extra_total_km))# 242611
-
-# How many countries
-length(unique(land_grab_country$ISO3)) # 83
-
-# How many people?
-pops <- read_csv("Data/Pops.csv")
-pops %>% 
-  mutate(included = if_else(ISO3 %in% land_grab_country$ISO3,
-                            true = "y", false = "n")) %>%
-  group_by(included) %>%
-  summarise(population = sum(Pop, na.rm = TRUE)) %>%
-  mutate(total = sum(population),
-         proportion = population / total) # 55%
-
-
-
-
