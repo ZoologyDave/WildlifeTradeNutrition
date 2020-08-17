@@ -6,8 +6,6 @@
 #
 # Packages -----
 library(tidyverse)
-library(dplyr) # You don't actually need dplyr and tidyr --they are included in tidyverse
-library(tidyr)
 library(countrycode)
 
 options(tibble.width = Inf)
@@ -27,17 +25,11 @@ lca <- read_csv("ProcessedData/RegionalLCA_cleaned.csv")
 
 # 1) Calculate proption of different meats in each country ----
 types <- names(protein)
-# grep searches for the string (e.g. "pppd" and returns the indices where it appears)
-grep("pppd", types)
-# grepl does the same but returns a logical for each position:
-grepl("pppd", types)
-# You then index by this (either grep or grepl should work here)
-types[grep("pppd", types)] 
 types <- types[grep("pppd", types)] 
 types <- types[-grep("all", types)]
 types <- types[-grep("game", types)]
 
-# 1)a) Reassign weird meats to ones we have LCA data for -----
+# 1)a) Reassign unknown meats to ones we have LCA data for -----
 # Do this in two stages: 
 # a) Reassign those we're sure of (birds --> poultry etc.)
 # b) Reassign those we're not sure of proportionally

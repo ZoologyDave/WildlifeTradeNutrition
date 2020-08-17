@@ -5,8 +5,6 @@ rm(list=ls())
 
 # Packages -----
 library(tidyverse)
-library(dplyr)
-library(tidyr)
 library(ggplot2)
 library(RColorBrewer)
 library(ggrepel)

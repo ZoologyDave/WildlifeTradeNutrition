@@ -32,7 +32,9 @@ genus <- read_csv("Data/GenusNutrientsByFood.csv")
 # Select medians for analysis and combine with populations -----
 meds<- select(genus, ISO3, COUNTRY, contains("Median"))
 b <- select(meds, contains("Median"))
+# Calculate total protein consumption 
 meds$allprotien_percap <- rowSums(b, na.rm = TRUE)
+# Select meats and total protein
 meatmeds<- select(meds, ISO3, COUNTRY, contains("Meat"), contains("meat"), contains ("snails"), contains ("allprotien_percap"))
 
 # add population estimates
