@@ -12,18 +12,9 @@ library(ggrepel)
 # Get data sets -----
 land <- read_csv("ProcessedData/LandDemandByCountry.csv")
 food <- read_csv("Data/FoodSecurity.csv")
-protein <- read_csv("ProcessedData/GENusData_cleaned.csv")
 biodiv <- read_csv("ProcessedData/Biodiversity Estimates 5June2020.csv")
 eid <- read_csv("Data/EID By Country.csv")
-
-# Updating protein with halpern data where necessary
-fao_halpern <- read_csv("ProcessedData/FAO_Halpern2019BushmeatData.csv")
-
-protein <- 
-  left_join(protein, 
-            dplyr::select(fao_halpern,ISO3, game_protein_kg_extra)) %>%
-  mutate(game_protein_kg_extra_pppd = game_protein_kg_extra / Pop / 365.25 * 1000) %>%
-  mutate(percent_game_pppd = ifelse(is.na(percent_game_pppd), game_protein_kg_extra_pppd / allmeatpppd * 100, percent_game_pppd))
+protein <- read_csv("ProcessedData/AllGameConsumptionData.csv")
 
 # Getting land and eid categories
 land.eid <- 

@@ -125,15 +125,36 @@ halpern <- halpern %>%
 # This translates as 13% protein 
 protein <- fao_consumption %>%
   select(ISO3, consumption_t) %>%
+  mutate(source = "FAO trade balance sheets") %>%
   bind_rows(., halpern %>%
+              mutate(source = "Halpern et al 2019") %>%
               select(ISO3 = iso_a3,
-                     consumption_t = Bushmeat)) %>%
+                     consumption_t = Bushmeat, 
+                     source)) %>%
   mutate(game_protein_kg_extra = consumption_t * .13 * 1000) %>%
   filter(game_protein_kg_extra > 0)
 
 write_csv(protein, 
           path = "ProcessedData/FAO_Halpern2019BushmeatData.csv")
 
+# Combine the datasets to make things cleaner ----
+rm(list=ls())
+protein <- read_csv("ProcessedData/GENusData_cleaned.csv")
+fao_halpern <- read_csv("ProcessedData/FAO_Halpern2019BushmeatData.csv")
+
+protein <- protein %>%
+  left_join(., select(fao_halpern,ISO3, game_protein_kg_extra, source)) %>%
+  mutate(game_protein_kg_extra_pppd = game_protein_kg_extra / Pop / 365.25 * 1000,
+         # Take the GENuS data if present, otherwise use FAO / Halpern
+         percent_game_pppd = ifelse(is.na(percent_game_pppd), 
+                                    yes = game_protein_kg_extra_pppd / allmeatpppd * 100, 
+                                    no = percent_game_pppd),
+         source = ifelse(is.na(source), 
+                         yes = "GENuS database",
+                         no = source))
+
+write_csv(protein, 
+          path = "ProcessedData/AllGameConsumptionData.csv")
 
 
 
