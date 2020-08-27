@@ -40,10 +40,7 @@ elfp <- left_join(fp, land.eid %>% dplyr::select(ISO3, eid.cat, land.cat, tot.ca
 belfp <- left_join(elfp, biodiv %>% dplyr::select(ISO3, biodiv = Median_total_glob_trans)) %>%
   mutate(biodiv = ifelse(is.na(biodiv), 0, biodiv)) # Converting NAs to 0s
 
-
-# Patronising Dave is patronising (1):
 # If names match, you don't need "by", saving you whole seconds of typing
-# Patronising Dave is patronising (2):
 # You can avoid altering data by using "by" if names DON'T match
 left_join(protein, food, by = c("ISO3" = "ISO"))
 
@@ -71,17 +68,18 @@ labels <- belfp %>%
          !is.na(FS_rank)) %>%
   select(COUNTRY) %>%
   arrange(COUNTRY) %>%
-  mutate(plot_country = case_when(COUNTRY == "Venezuela (Bolivarian Republic of)" ~ "Tanzania",
+  mutate(plot_country = case_when(COUNTRY == "Venezuela (Bolivarian Republic of)" ~ "Venezuela",
+                                  COUNTRY == "United Republic of Tanzania" ~ "Tanzania",
                                   COUNTRY == "United States of America" ~ "USA",
                                   COUNTRY == "United Kingdom" ~ "UK",
                                   COUNTRY == "Czech Republic" ~ "Czechia",
                                   COUNTRY == "Bolivia (Plurinational State of)" ~ "Bolivia",
                                   COUNTRY == "Cote d'Ivoire" ~ "Côte d'Ivoire", # THIS MIGHT BREAK THINGS! 
-                                  COUNTRY == "Sudan (former)" ~ "Sudan\n(former)",
+                                  COUNTRY == "Sudan (former)" ~ "Sudan",
                                   COUNTRY %in% c("Norway", "Switzerland", "Finland", 
                                                  "Netherlands", "Belgium", "Denmark", 
                                                  "United Arab Emirates") ~ "", # Add any more you don't want to plot
-                                  TRUE ~ COUNTRY)) 
+                                  TRUE ~ COUNTRY))
 
 belfp <- belfp %>%
   left_join(., labels)
