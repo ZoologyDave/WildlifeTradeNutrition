@@ -1,6 +1,6 @@
 # READ ME: 
 # Taking the processed data from LandUseCalcs_ForPublication.R, GenusDataPrep_ForPublication.R,
-# ...OTHER SCRIPTS... and producing Figure 2
+# and producing Figure 2
 
 rm(list=ls())
 
