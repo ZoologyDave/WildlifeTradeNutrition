@@ -202,7 +202,8 @@ land_grab <- land_grab %>%
          extra_crop_km_sd = extra_crop_m_sd / 1000000,
          extra_total_km = extra_total_m / 1000000,
          extra_total_km_sd = extra_total_m_sd / 1000000) %>%
-  select(country, ISO3, PerPersonPerDay_g:extra_total_km_sd)
+  select(country, ISO3, Region, Product, PerPersonPerDay_g, Proportion, game_protein_kg_extra,
+         kg_extra, Pasture_m2_kg_protein:sd_Crop_m2_kg_protein)
 
 write_csv(land_grab,
           "ProcessedData/LandDemandByCountryByProduct_withSDs.csv")
