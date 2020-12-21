@@ -3,10 +3,17 @@
 library(raster)
 library(plyr)
 library(dplyr)
+
+#
+# Packages -----
+library(tidyverse)
 library(countrycode)
+library(rnaturalearth)
+
+git.directory <- "/Users/macuser/Documents/GitHub/WildlifeTradeNutrition/"
 
 # Importing EID Data
-eid.dat <- raster("/Data/bsm_weight_pop fig3b.tif")
+eid.dat <- raster(paste0(git.directory,"/Data/bsm_weight_pop fig3b.tif"))
 
 # Making country raster
 country.map <- rasterize(countries110,eid.dat, field = as.numeric(countries110$iso_n3), update = TRUE)
@@ -25,4 +32,4 @@ out.dat <-
 
 # And writing file
 write.csv(out.dat,
-          "/Data/EID By Country.csv")
+          paste0(git.directory,"/Data/EID By Country.csv"))
