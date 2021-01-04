@@ -15,7 +15,7 @@ rm(list=ls())
 
 # Load LCA and GENus data -----
 protein <- read_csv("ProcessedData/AllGameConsumptionData.csv")
-# fao_halpern <- read_csv("ProcessedData/FAO_Halpern2019BushmeatData.csv")
+
 # First time: clean up lca data to match protein names
 # lca <- read_csv("Data/Region Land Estimates.csv")
 # lca <- lca %>%
@@ -54,6 +54,7 @@ lookup <- data.frame(MeatType = types) %>%
                      "Pig Meat", 
                      "Lamb & Mutton", 
                      NA))
+lookup
 # Refs: 
 # http://agritech.tnau.ac.in/animal_husbandry/animhus_rabbitbreed.html
 # https://books.google.co.uk/books?id=CtD-6CPdZCgC&printsec=frontcover&source=gbs_ge_summary_r&cad=0#v=onepage&q&f=false
@@ -202,8 +203,9 @@ land_grab <- land_grab %>%
          extra_crop_km_sd = extra_crop_m_sd / 1000000,
          extra_total_km = extra_total_m / 1000000,
          extra_total_km_sd = extra_total_m_sd / 1000000) %>%
-  select(country, ISO3, Region, Product, PerPersonPerDay_g, Proportion, game_protein_kg_extra,
-         kg_extra, Pasture_m2_kg_protein:sd_Crop_m2_kg_protein)
+  select(country, ISO3, Region, Product, PerPersonPerDay_g, Proportion, game_protein_kg_extra, kg_extra, 
+         Pasture_m2_kg_protein:sd_Crop_m2_kg_protein,
+         extra_pasture_km:extra_total_km)
 
 write_csv(land_grab,
           "ProcessedData/LandDemandByCountryByProduct_withSDs.csv")

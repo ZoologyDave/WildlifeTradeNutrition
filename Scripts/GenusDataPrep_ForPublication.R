@@ -16,14 +16,7 @@ library(countrycode)
 options(tibble.width = Inf)
 rm(list=ls())
 
-# Preparing raw data from GENuS ######
-# If you put a load of hashes at the end of a line, it allows "code folding" in RStudio.
-# So if you look to the left of "Preparing raw data from GENus" there is a little arrow. 
-# Click on that and it hides the code until the next set of hashes.
-# Similarly, those hashes (or ----- ) allow you to navigate through code. If you look at 
-#    bottom of this window, you can see a little drop-down menu that allows you to 
-#    navigate to different bits of the script
-
+# Preparing raw data from GENuS -----
 # Load data ----
 pops <- read_csv("Data/Pops.csv")
 genus <- read_csv("Data/GenusNutrientsByFood.csv")
@@ -58,7 +51,7 @@ protein<- d1 %>%
          nespppd = 'Meat; nesMediang/person/day',
          snailpppd = `Snails; not seaMediang/person/day`)
 
-# Calculate game and total meat per country per year -----
+# Calculate game and total meat per country per year (pcpa) -----
 # Game (in kgs)
 protein$gamepcpa <- protein$gamepppd*protein$Pop*365.25/1000
 
@@ -70,7 +63,6 @@ protein$percent_game_pppd <- protein$gamepppd/protein$allmeatpppd*100
 protein$protiennogame_ppd <- protein$allprotien_percap - protein$gamepppd
 
 # Save the cleaned data -----
-# (in a new directory to separate out raw from processed) 
 write_csv(protein,
           path = "ProcessedData/GENusData_cleaned.csv")
 

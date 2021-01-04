@@ -1,22 +1,20 @@
-###
-# Summing EID risk by country
+# Read me: -----
+# Author: Michael Clark
+# Purpose: Estimating the summed EID risk by country
+
+# Packages -----
 library(raster)
 library(plyr)
 library(dplyr)
-
-#
-# Packages -----
-library(tidyverse)
-library(countrycode)
 library(rnaturalearth)
+library(countrycode)
 
-git.directory <- "/Users/macuser/Documents/GitHub/WildlifeTradeNutrition/"
+# Importing EID Data -----
+rm(list = ls())
+eid.dat <- raster("Data/bsm_weight_pop fig3b.tif")
 
-# Importing EID Data
-eid.dat <- raster(paste0(git.directory,"/Data/bsm_weight_pop fig3b.tif"))
-
-# Making country raster
-country.map <- rasterize(countries110,eid.dat, field = as.numeric(countries110$iso_n3), update = TRUE)
+# Making a raster of countries -----
+country.map <- rasterize(countries110, eid.dat, field = as.numeric(countries110$iso_n3), update = TRUE)
 
 # Creating data frame, and summing by country
 out.dat <-
@@ -32,4 +30,5 @@ out.dat <-
 
 # And writing file
 write.csv(out.dat,
-          paste0(git.directory,"/Data/EID By Country.csv"))
+          file = "ProcessedData/EID By Country.csv", 
+          row.names = FALSE)
